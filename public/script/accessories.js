@@ -1,3 +1,8 @@
+let header = $("header");
+$(window).on("scroll", () => {
+  header.toggleClass("shadow", $(window).scrollTop() > 0);
+});
+
 // Products Array
 const products = [
   {

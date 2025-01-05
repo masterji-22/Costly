@@ -45,6 +45,11 @@ header {
   z-index: 100;
 }
 
+header.shadow {
+  background: #f2f0f1;
+  box-shadow: 0 1px 4px hsla(0, 4%, 15%, 0.1);
+  transition: 0.5s ease;
+}
 .nav {
   display: flex;
   align-items: center;
@@ -287,12 +292,12 @@ header {
 /* Modal Styles */
 .product-modal {
   position: fixed;
+  display: flex;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.7);
-
   justify-content: center;
   align-items: center;
   z-index: 9999;
@@ -305,8 +310,7 @@ header {
   border-radius: 10px;
   max-width: 800px;
   padding: 20px;
-  top: 200px;
-  left: 350px;
+  align-content: center;
   width: 100%;
   height: 47vh;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
@@ -372,4 +376,200 @@ header {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   object-fit: cover; /* Maintain aspect ratio while cropping */
+}
+
+.footer {
+  background: #1d18a8;
+  padding: 40px 0;
+}
+
+.footer-c {
+  display: grid;
+  grid-template-columns: 60% 20% 20%;
+  gap: 2rem;
+}
+
+.footer-box {
+  display: flex;
+  flex-direction: column;
+}
+.footer-box h2 {
+  font-size: 8rem;
+  color: var(--bg-color);
+  text-transform: uppercase;
+}
+.social {
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+}
+.social .bx {
+  background: var(--bg-color);
+  color: #1d18a8;
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.footer-box h3 {
+  color: var(--bg-color);
+  text-transform: uppercase;
+}
+.footer-box a {
+  color: var(--bg-color);
+  font-size: 1rem;
+  text-transform: uppercase;
+  margin-top: 1rem;
+}
+.copyright {
+  color: var(--bg-color);
+  text-transform: uppercase;
+  padding-top: 30px;
+}
+
+@media (max-width: 1150px) {
+  .container {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .home-img::before {
+    font-size: 8rem;
+    top: -60px;
+  }
+  .modal-image img {
+    height: 340px;
+    object-fit: contain;
+  }
+}
+
+@media (max-width: 910px) {
+  .nav {
+    padding: 18px 0;
+  }
+  .home-img::before {
+    font-size: 6rem;
+    top: -35px;
+  }
+  .product-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .modal-content {
+    max-width: 600px;
+    height: 56vh;
+  }
+
+  .recommended-products {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .modal-image {
+    display: flex;
+    justify-content: center;
+  }
+
+  .modal-image img {
+    height: 400px;
+    object-fit: contain;
+  }
+}
+
+@media (max-width: 720px) {
+  .home {
+    min-height: 620px;
+  }
+  .home-img::before {
+    font-size: 5rem;
+  }
+  .cart-box {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .footer-c {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .modal-content {
+    max-width: 400px;
+    flex-direction: column;
+    height: 73vh;
+  }
+  .modal-image img {
+    height: 150px;
+  }
+  .modal-details {
+    text-align: center;
+  }
+}
+@media (max-width: 550px) {
+  #menu-icon {
+    display: initial;
+  }
+  .navbar {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    background: #f2f0f1;
+    text-align: center;
+    padding: 10px 0;
+    box-shadow: 0 20px 20px rgb(15 54 55 / 20%);
+    clip-path: circle(0% at 0% 0%);
+    transition: 0.6s;
+  }
+  .nav-link {
+    display: block;
+    padding: 15x;
+  }
+  .navbar.open-menu {
+    clip-path: circle(144% at 0% 0%);
+  }
+  .home {
+    min-height: 520px;
+  }
+  .home-img::before {
+    font-size: 4rem;
+    top: -26px;
+  }
+  .heading {
+    font-size: 2.5rem;
+  }
+  .product-container {
+    grid-template-columns: 1fr 1fr;
+  }
+  .modal-content {
+    max-width: 400px;
+    flex-direction: column;
+    height: 94vh;
+  }
+  .modal-image img {
+    height: 150px;
+  }
+  .modal-details {
+    text-align: center;
+  }
+}
+
+@media (max-width: 390px) {
+  .home {
+    min-height: 400px;
+  }
+
+  .home-img::before {
+    font-size: 3rem;
+    top: -26px;
+  }
+
+  .product-container {
+    grid-template-columns: 1fr;
+  }
+  .cart-item {
+    gap: 10px;
+  }
+
+  .modal-content {
+    max-width: 300px;
+  }
 }
