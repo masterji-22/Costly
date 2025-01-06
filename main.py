@@ -1,3 +1,4 @@
+import sys
 import pickle
 import numpy as np
 from tensorflow.keras.preprocessing import image
@@ -11,7 +12,7 @@ import tensorflow
 
 # Load feature data and model
 feature_list = np.array(pickle.load(open('embeddings.pkl', 'rb')))
-filenames = pickle.load(open('filenames.pkl', 'rb'))
+filenames = pickle.load(open('filenames.pkl', 'rb'))  # Assuming 'filenames.pkl' contains the image file paths
 
 model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
 model.trainable = False
@@ -45,8 +46,8 @@ def recommend(features, feature_list):
     return indices
 
 # Main function to process the image
-def process_image():
-    img = load_image_from_file('temp_image.jpg')  # Load image from the saved file
+def process_image(image_path):
+    img = load_image_from_file(image_path)  # Load image from the provided path
 
     # Extract features from the image
     features = feature_extraction(img, model)
@@ -62,5 +63,10 @@ def process_image():
 
 # Main entry for script execution (used by the backend)
 if __name__ == "__main__":
-    recommended_files = process_image()
+    if len(sys.argv) < 2:
+        print("Error: Image path argument is missing.")
+        sys.exit(1)
+    
+    image_path = sys.argv[1]  # Image path is passed as a command-line argument
+    recommended_files = process_image(image_path)
     print(recommended_files)

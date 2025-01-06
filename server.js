@@ -60,53 +60,26 @@ app.post("/recommend", async (req, res) => {
   const uploadedFileUrl = req.body.uploadedFileUrl;
   console.log(`Processing image URL: ${uploadedFileUrl}`);
 
-  // Download the image and save it as temp_image.jpg
+  // Assuming the image URL points to the asset folder, we get the file name
+  const imagePath = path.join(
+    __dirname,
+    "public",
+    "assets",
+    uploadedFileUrl.split("/").pop()
+  );
+
   try {
-    const response = await axios({
-      url: uploadedFileUrl,
-      method: "GET",
-      responseType: "arraybuffer",
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-        Accept: "image/webp,image/apng,image/*,*/*;q=0.8",
-        Referer: "https://images.undiz.com/",
-      },
+    const recommendedProducts = await processRecommendation(imagePath);
+    res.json({
+      message: "Recommendation successful",
+      recommendedProducts,
     });
-
-    // Save the image locally as temp_image.jpg
-    const savePath = path.join(__dirname, "temp_image.jpg");
-    const writeFile = promisify(fs.writeFile);
-    await writeFile(savePath, response.data);
-    console.log("Image saved as temp_image.jpg");
-
-    const MAX_RETRIES = 3;
-    let retries = 0;
-
-    const retryRecommendation = async () => {
-      try {
-        const recommendedProducts = await processRecommendation(savePath);
-        res.json({
-          message: "Recommendation successful",
-          recommendedProducts,
-        });
-      } catch (error) {
-        retries++;
-        console.error(`Attempt ${retries} failed: ${error.message}`);
-        if (retries < MAX_RETRIES) {
-          console.log("Retrying recommendation...");
-          retryRecommendation(); // Retry the recommendation
-        } else {
-          console.log("Max retries reached. Restarting server...");
-          process.exit(1); // Exit to allow external process manager to restart the server
-        }
-      }
-    };
-
-    retryRecommendation(); // Start the recommendation process
   } catch (error) {
-    console.error("Error downloading image:", error);
-    res.status(500).json({ error: "Failed to download image" });
+    console.error("Recommendation failed:", error.message);
+    res.status(500).json({
+      message: "Failed to generate recommendations",
+      error: error.message,
+    });
   }
 });
 
