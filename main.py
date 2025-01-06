@@ -1,3 +1,7 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU
+os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "false"  # Prevent GPU memory allocation
+
 import sys
 import pickle
 import numpy as np
@@ -10,14 +14,11 @@ import json
 from PIL import Image
 import tensorflow as tf
 
-# Disable GPU if not required (e.g., Render free plan or CPU-only environment)
-tf.config.set_visible_devices([], 'GPU')  # Disable GPU
-
 # Load feature data and model only once to avoid reloading on each request
 if not hasattr(sys.modules[__name__], "model"):
     # Load the feature data and filenames
     feature_list = np.array(pickle.load(open('embeddings.pkl', 'rb')))
-    filenames = pickle.load(open('filenames.pkl', 'rb'))  # Assuming 'filenames.pkl' contains the image file paths
+    filenames = pickle.load(open('filenames.pkl', 'rb'))  # Image file paths
 
     # Initialize ResNet50 model
     model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
