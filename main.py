@@ -8,16 +8,22 @@ from sklearn.neighbors import NearestNeighbors
 from numpy.linalg import norm
 import json
 from PIL import Image
-import tensorflow
+import tensorflow as tf
 
-# Load feature data and model
-feature_list = np.array(pickle.load(open('embeddings.pkl', 'rb')))
-filenames = pickle.load(open('filenames.pkl', 'rb'))  # Assuming 'filenames.pkl' contains the image file paths
+# Disable GPU if not required (e.g., Render free plan or CPU-only environment)
+tf.config.set_visible_devices([], 'GPU')  # Disable GPU
 
-model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
-model.trainable = False
+# Load feature data and model only once to avoid reloading on each request
+if not hasattr(sys.modules[__name__], "model"):
+    # Load the feature data and filenames
+    feature_list = np.array(pickle.load(open('embeddings.pkl', 'rb')))
+    filenames = pickle.load(open('filenames.pkl', 'rb'))  # Assuming 'filenames.pkl' contains the image file paths
 
-model = tensorflow.keras.Sequential([model, GlobalMaxPooling2D()])
+    # Initialize ResNet50 model
+    model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+    model.trainable = False
+    model = tf.keras.Sequential([model, GlobalMaxPooling2D()])
+    sys.modules[__name__].model = model  # Save model to avoid reloading
 
 # Function to load the image from the local file
 def load_image_from_file(file_path):
@@ -25,7 +31,7 @@ def load_image_from_file(file_path):
         img = Image.open(file_path)
         return img
     except Exception as e:
-        print(f"Error loading image from file: {e}")
+        print(f"Error loading image from file {file_path}: {e}")
         raise
 
 # Function for feature extraction
@@ -47,19 +53,24 @@ def recommend(features, feature_list):
 
 # Main function to process the image
 def process_image(image_path):
-    img = load_image_from_file(image_path)  # Load image from the provided path
+    try:
+        img = load_image_from_file(image_path)  # Load image from the provided path
 
-    # Extract features from the image
-    features = feature_extraction(img, model)
+        # Extract features from the image
+        features = feature_extraction(img, model)
 
-    # Get recommended product indices
-    indices = recommend(features, feature_list)
+        # Get recommended product indices
+        indices = recommend(features, feature_list)
 
-    # Prepare the list of recommended products' filenames (excluding the uploaded image)
-    recommended_files = [filenames[i] for i in indices[0][1:]]  # Exclude the first item (uploaded image)
+        # Prepare the list of recommended products' filenames (excluding the uploaded image)
+        recommended_files = [filenames[i] for i in indices[0][1:]]  # Exclude the first item (uploaded image)
 
-    # Return recommended products as JSON
-    return json.dumps(recommended_files)
+        # Return recommended products as JSON
+        return json.dumps(recommended_files)
+
+    except Exception as e:
+        print(f"Error processing the image: {e}")
+        return json.dumps({"error": str(e)})
 
 # Main entry for script execution (used by the backend)
 if __name__ == "__main__":
